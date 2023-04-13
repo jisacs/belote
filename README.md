@@ -1,0 +1,2 @@
+# belote
+Jeux de belote
