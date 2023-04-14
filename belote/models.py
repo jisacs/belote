@@ -1,10 +1,21 @@
-
 from enum import Enum
 import pygame
 import random
 
 
 # Now let's add in the suits we'll need for the cards. We'll use the Enum class to define the different suits.
+
+
+class Position:
+    x = 0.0
+    y = 0.0
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __str__(self):
+        return f"x:{self.x}, y:{self.y}"
 
 
 class Suits(Enum):
@@ -19,13 +30,15 @@ class Card:
     suit = None
     value = None
     image = None
+    pos = Position(0, 0)
 
-    def __init__(self, suit, value):
+    def __init__(self, suit, value, position=None):
         self.suit = suit
         self.value = value
         self.image = pygame.image.load(
             "images/" + self.suit.name + "-" + str(self.value) + ".svg"
         )
+        self.pos = position
 
 
 class Deck:
@@ -74,20 +87,26 @@ class Pile:
         return False
 
 
-class Player:
-    hand = None
-    flipKey = None
-    snapKey = None
-    name = None
+CARD_LENGTH = 100
 
-    def __init__(self, name, flipKey, snapKey):
+
+class BelotePlayer:
+    hand = None
+    position = None
+    name = None
+    next_spot = None
+
+    def __init__(self, name, position):
         self.hand = []
-        self.flipKey = flipKey
-        self.snapKey = snapKey
+        self.position = position
         self.name = name
 
     def draw(self, deck):
-        self.hand.append(deck.deal())
+        card = deck.deal()
+        card_x = self.position.x + len(self.hand) * card.image.get_size()[0]/2 + 300
+        card_y = self.position.y + card.image.get_size()[1]/2
+        card.pos = Position(card_x, card_y)
+        self.hand.append(card)
 
     def play(self):
         return self.hand.pop(0)
