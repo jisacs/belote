@@ -29,7 +29,7 @@ if __name__ == "__main__":
     """
 
     def renderGame(window):
-        # window.fill((15, 0, 169))
+        window.fill((15, 0, 169))
         font = pygame.font.SysFont("comicsans", 60, True)
 
         """
@@ -47,6 +47,14 @@ if __name__ == "__main__":
                 color = selected_color
             text = font.render(player.name, True, color)
             window.blit(text, (player.position.x, player.position.y))
+
+        for player in gameEngine.players:
+            for card in player.hand:
+                window.blit(card.image, (card.pos.x, card.pos.y))
+
+        for index, card in enumerate(gameEngine.deck.cards):
+            window.blit(card.image, (index * card.image.get_size()[0] * 1.1 + 300, 800))
+
         """
         text = font.render(
             gameEngine.player1.name,  True, (255, 255, 255)
@@ -101,10 +109,6 @@ if __name__ == "__main__":
             window.blit(text, (20, 50))
         """
 
-    for player in gameEngine.players:
-        for card in player.hand:
-            window.blit(card.image, (card.pos.x, card.pos.y))
-
     run = True
     while run:
         key = None
@@ -113,18 +117,20 @@ if __name__ == "__main__":
                 run = False
             if event.type == pygame.KEYDOWN:
                 key = event.key
-                print(key)
+                figure = key - 48
+                if figure >= 1 and figure <= len(gameEngine.currentPlayer.hand):
+                    print(f"key {key}, figure {figure}")
+                    print(f"gameEngine.state {gameEngine.state}")
+                    if gameEngine.state == GameState.PLAYING:
+                        gameEngine.currentPlayer.throw(figure, gameEngine.deck)
 
         gameEngine.play(key)
         renderGame(window)
         pygame.display.update()
 
-        """
-        if gameEngine.state == GameState.SNAPPING:
-            pygame.time.delay(3000)
-            gameEngine.state = GameState.PLAYING
-        """
-    """    
-    cardBack = pygame.image.load("images/BACK.png")
-    cardBack = pygame.transform.scale(cardBack, (int(238 * 0.8), int(332 * 0.8)))
-    """
+
+
+
+            #pygame.time.delay(3000)
+            #gameEngine.state = GameState.PLAYING
+

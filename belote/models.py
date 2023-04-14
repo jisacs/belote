@@ -113,6 +113,10 @@ class BelotePlayer:
     def draw(self, deck):
         self.hand.append(deck.deal())
 
+    def throw(self, index, deck):
+        deck.cards.append(self.hand.pop(index-1))
+        self.dispose_cards()
+
     def dispose_cards(self):
         for index, card in enumerate(self.hand):
             card_x = self.position.x + index * card.image.get_size()[0] * 1.1 + 300
