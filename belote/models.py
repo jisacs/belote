@@ -40,6 +40,11 @@ class Card:
         )
         self.pos = position
 
+    def __repr__(self):
+        return (
+            "{" + str(self.suit) + ", " + str(self.value) + ", " + str(self.pos) + "}"
+        )
+
 
 class Deck:
     cards = None
@@ -101,12 +106,18 @@ class BelotePlayer:
         self.position = position
         self.name = name
 
+    def sort_hand(self):
+        # sort list by `name` in reverse order
+        self.hand.sort(key=lambda card: card.value, reverse=False)
+
     def draw(self, deck):
-        card = deck.deal()
-        card_x = self.position.x + len(self.hand) * card.image.get_size()[0]/2 + 300
-        card_y = self.position.y + card.image.get_size()[1]/2
-        card.pos = Position(card_x, card_y)
-        self.hand.append(card)
+        self.hand.append(deck.deal())
+
+    def dispose_cards(self):
+        for index, card in enumerate(self.hand):
+            card_x = self.position.x + index * card.image.get_size()[0] / 2 + 300
+            card_y = self.position.y + card.image.get_size()[1] / 2
+            card.pos = Position(card_x, card_y)
 
     def play(self):
         return self.hand.pop(0)

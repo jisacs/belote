@@ -29,7 +29,7 @@ if __name__ == "__main__":
     """
 
     def renderGame(window):
-        #window.fill((15, 0, 169))
+        # window.fill((15, 0, 169))
         font = pygame.font.SysFont("comicsans", 60, True)
 
         """
@@ -38,7 +38,16 @@ if __name__ == "__main__":
         window.blit(cardBack, (350, 50))
         window.blit(cardBack, (350, 450))
         """
+        black = (255, 255, 255)
+        selected_color = (255, 0, 0)
 
+        for player in gameEngine.players:
+            color = black
+            if gameEngine.currentPlayer == player:
+                color = selected_color
+            text = font.render(player.name, True, color)
+            window.blit(text, (player.position.x, player.position.y + 50))
+        """
         text = font.render(
             gameEngine.player1.name,  True, (255, 255, 255)
         )
@@ -58,6 +67,7 @@ if __name__ == "__main__":
             gameEngine.player4.name, True, (255, 255, 255)
         )
         window.blit(text, (gameEngine.player4.position.x, gameEngine.player4.position.y+50))
+        """
         """
         topCard = gameEngine.pile.peek()
         if topCard != None:
@@ -91,11 +101,9 @@ if __name__ == "__main__":
             window.blit(text, (20, 50))
         """
 
-
     for player in gameEngine.players:
         for card in player.hand:
             window.blit(card.image, (card.pos.x, card.pos.y))
-
 
     run = True
     while run:
@@ -106,8 +114,6 @@ if __name__ == "__main__":
             if event.type == pygame.KEYDOWN:
                 key = event.key
                 print(key)
-
-
 
         gameEngine.play(key)
         renderGame(window)

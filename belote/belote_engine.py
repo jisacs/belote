@@ -2,12 +2,14 @@ from engine import Deck, GameState, Pile
 from models import BelotePlayer
 from models import Position
 
+
 class BeleteEngine:
     deck = None
     player1 = None
     player2 = None
     player4 = None
     player4 = None
+    players = None
     state = None
     currentPlayer = None
     result = None
@@ -19,20 +21,33 @@ class BeleteEngine:
         self.player2 = BelotePlayer("Player 2", Position(50, 150))
         self.player3 = BelotePlayer("Player 3", Position(50, 300))
         self.player4 = BelotePlayer("Player 4", Position(50, 450))
-        self.players = [self.player1, self.player2, self.player3, self.player4,]
+        self.players = [
+            self.player1,
+            self.player2,
+            self.player3,
+            self.player4,
+        ]
         self.pile = Pile()
         self.deal()
+        self.sort()
+        self.dispose_cards()
         self.currentPlayer = self.player1
         self.state = GameState.PLAYING
 
     def deal(self):
         half = self.deck.length() // 4
         for i in range(0, half):
-            self.player1.draw(self.deck)
-            self.player1.next_spot
-            self.player2.draw(self.deck)
-            self.player3.draw(self.deck)
-            self.player4.draw(self.deck)
+            for player in self.players:
+                player.draw(self.deck)
+
+    def sort(self):
+        for player in self.players:
+            player.sort_hand()
+
+    def dispose_cards(self):
+        for player in self.players:
+            player.sort_hand()
+            player.dispose_cards()
 
     def switchPlayer(self):
         if self.currentPlayer == self.player1:
