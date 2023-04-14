@@ -17,10 +17,10 @@ class BeleteEngine:
     def __init__(self):
         self.deck = Deck()
         self.deck.shuffle()
-        self.player1 = BelotePlayer("Player 1", Position(50, 0))
-        self.player2 = BelotePlayer("Player 2", Position(50, 150))
-        self.player3 = BelotePlayer("Player 3", Position(50, 300))
-        self.player4 = BelotePlayer("Player 4", Position(50, 450))
+        self.player1 = BelotePlayer("Player 1", Position(50, 100))
+        self.player2 = BelotePlayer("Player 2", Position(50, 250))
+        self.player3 = BelotePlayer("Player 3", Position(50, 400))
+        self.player4 = BelotePlayer("Player 4", Position(50, 550))
         self.players = [
             self.player1,
             self.player2,

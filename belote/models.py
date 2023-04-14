@@ -52,7 +52,7 @@ class Deck:
     def __init__(self):
         self.cards = []
         for suit in Suits:
-            for value in range(1, 14):
+            for value in [1, 7, 8, 9, 10, 11, 12, 13]:
                 self.cards.append(Card(suit, value))
 
     def shuffle(self):
@@ -108,15 +108,15 @@ class BelotePlayer:
 
     def sort_hand(self):
         # sort list by `name` in reverse order
-        self.hand.sort(key=lambda card: card.value, reverse=False)
+        self.hand.sort(key=lambda card: (str(card.suit), card.value,), reverse=False)
 
     def draw(self, deck):
         self.hand.append(deck.deal())
 
     def dispose_cards(self):
         for index, card in enumerate(self.hand):
-            card_x = self.position.x + index * card.image.get_size()[0] / 2 + 300
-            card_y = self.position.y + card.image.get_size()[1] / 2
+            card_x = self.position.x + index * card.image.get_size()[0] * 1.1 + 300
+            card_y = self.position.y
             card.pos = Position(card_x, card_y)
 
     def play(self):

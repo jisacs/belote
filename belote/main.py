@@ -46,7 +46,7 @@ if __name__ == "__main__":
             if gameEngine.currentPlayer == player:
                 color = selected_color
             text = font.render(player.name, True, color)
-            window.blit(text, (player.position.x, player.position.y + 50))
+            window.blit(text, (player.position.x, player.position.y))
         """
         text = font.render(
             gameEngine.player1.name,  True, (255, 255, 255)
