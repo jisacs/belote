@@ -12,7 +12,7 @@ cardBack = pygame.transform.scale(cardBack, (int(238 * 0.8), int(332 * 0.8)))
 
 if __name__ == "__main__":
     pygame.init()
-    bounds = (2048, 768)
+    bounds = (2048, 1024)
     window = pygame.display.set_mode(bounds)
     pygame.display.set_caption("SnaPy")
     """    
@@ -31,32 +31,45 @@ if __name__ == "__main__":
     def renderGame(window):
         window.fill((15, 0, 169))
         font = pygame.font.SysFont("comicsans", 60, True)
+        font_20 = pygame.font.SysFont("comicsans", 20, True)
 
         black = (255, 255, 255)
         selected_color = (255, 0, 0)
 
-        for player in gameEngine.players:
+        for index, player in enumerate(gameEngine.players):
             color = black
             if gameEngine.players[gameEngine.currentPlayer] == player:
                 color = selected_color
             text = font.render(player.name, True, color)
             window.blit(text, (player.position.x, player.position.y))
 
+            if gameEngine.first_player_id == index:
+                text = font_20.render("First", True, color)
+                window.blit(text, (player.position.x + 10, player.position.y - 10))
+
         for player in gameEngine.players:
             for card in player.hand:
                 window.blit(card.image, (card.pos.x, card.pos.y))
 
+        if gameEngine.deck.last_handle:
+            x = 1200
+            y = 600
+            for card in gameEngine.deck.last_handle:
+                window.blit(card.image, (x, y))
+                x += card.image.get_size()[0]/2
+
         for index, card in enumerate(gameEngine.deck.cards):
             window.blit(card.image, (index * card.image.get_size()[0] * 1.1 + 300, 800))
 
-        font = pygame.font.SysFont("comicsans", 20, True)
-        text = font.render(f"Trump {gameEngine.trump}", True, (0, 255, 0))
+        text = font_20.render(f"Trump {gameEngine.trump}", True, (0, 255, 0))
         window.blit(text, (1200, 250))
 
-        text = font.render(f"Active Team {gameEngine.active_team}", True, (0, 255, 0))
+        text = font_20.render(
+            f"Active Team {gameEngine.active_team}", True, (0, 255, 0)
+        )
         window.blit(text, (1200, 450))
 
-        text = font.render("CLUB SPADE HEART DIAMOND", True, (0, 255, 0))
+        text = font_20.render("CLUB SPADE HEART DIAMOND", True, (0, 255, 0))
         window.blit(text, (1200, 0))
         CLUB = 0  # C KEY 99
         SPADE = 1  # S KEY 115

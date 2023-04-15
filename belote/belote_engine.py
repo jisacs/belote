@@ -1,6 +1,7 @@
-from engine import Deck, GameState, Pile
+from engine import Deck, GameState
 from models import BelotePlayer, Team, Suits
 from models import Position
+from time import sleep
 
 
 class BeleteEngine:
@@ -11,6 +12,7 @@ class BeleteEngine:
     player4 = None
     players = None
     state = None
+    first_player_id = None
     currentPlayer = None
     result = None
 
@@ -31,14 +33,13 @@ class BeleteEngine:
             Team([self.player1, self.player3]),
             Team([self.player2, self.player4]),
         ]
-        self.pile = Pile()
-        self.deal()
-        self.sort()
-        self.dispose_cards()
+        self.first_player_id = 0
         self.currentPlayer = 0
         self.trump = None
         self.active_team = None
         self.state = GameState.BETTING
+        self.deal()
+        self.dispose_cards()
 
     def deal(self):
         half = self.deck.length() // 4
@@ -46,13 +47,13 @@ class BeleteEngine:
             for player in self.players:
                 player.draw(self.deck)
 
-    def sort(self):
+    def sort_all(self):
         for player in self.players:
-            player.sort_hand()
+            self.sort(player.hand)
 
     def dispose_cards(self):
         for player in self.players:
-            player.sort_hand()
+            self.sort(player.hand)
             player.dispose_cards()
 
     def switchPlayer(self):
@@ -67,39 +68,56 @@ class BeleteEngine:
                 self.active_team = self.teams[0]
             else:
                 self.active_team = self.teams[1]
+            self.state = GameState.PLAYING
+            self.currentPlayer = self.first_player_id
+            print(f"self.currentPlayer {self.currentPlayer}")
+            return True
+        else:
+            return False
 
-    """
-    Here we check which player is the current player and switch currentPlayer to the other player.
-    The last helper method we need on the engine is one that handles a player winning a round 
-    (by calling "Snap!" correctly, or the other player falsely calling "Snap!").
-     This method will change the state of the game. It will also add all the cards on the pile to the winner's hand.
-    Then it will clear out the pile so the next round can start:
-    """
+    def sort(self, cards):
+        def get_value(card, trump):
+            non_trump_values = {1: 11, 7: 0, 8: 0, 9: 0, 10: 10, 11: 2, 12: 3, 13: 4}
+            trump_values = {1: 11, 7: 0, 8: 0, 9: 14, 10: 10, 11: 20, 12: 3, 13: 4}
+            if card.suit == trump:
+                return trump_values[card.value]
+            else:
+                return non_trump_values[card.value]
 
-    def winRound(self, player):
-        self.state = GameState.SNAPPING
-        player.hand.extend(self.pile.popAll())
-        self.pile.clear()
-
-    """
-    Now we get to the main logic of the engine. This method will be called from our main game loop, which we will define later.
-    Let's start with the method definition and some basic checks. Then we'll add the logic in sections. Start by adding this method to the engine:
-    """
+        cards.sort(
+            key=lambda card: (
+                card.suit == self.trump,
+                str(card.suit),
+                get_value(card, self.trump),
+            ),
+            reverse=True,
+        )
 
     def play(self, key):
-        if key == None:
+        if key is None:
             return
 
         if self.state == GameState.ENDED:
+            self.first_player_id += 1
+            if self.first_player_id >= len(self.players):
+                self.first_player_id = 0
             return
 
-        print(f"key {key}")
         if self.state == GameState.PLAYING:
-            self.players[self.currentPlayer].throw(
-                key, self.deck
-            )
-            self.switchPlayer()
-        if self.state == GameState.BETTING:
-            self.set_trump(key)
-            self.switchPlayer()
+            if self.players[self.currentPlayer].throw(key, self.deck):
+                self.switchPlayer()
+                if len(self.deck.cards) >= 4:
+                    # sort list by `name` in reverse order
+                    self.sort(self.deck.cards)
+                    higher_card = self.deck.cards[0]
+                    print(f'higher_card {higher_card}')
+                    self.deck.last_handle = self.deck.cards.copy()
+                    self.deck.cards = []
 
+                if sum([len(player.hand) for player in self.players]) <= 0:
+                    self.state = GameState.ENDED
+
+
+        if self.state == GameState.BETTING:
+            if not self.set_trump(key):
+                self.switchPlayer()

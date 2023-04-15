@@ -69,6 +69,7 @@ class Team:
 
 class Deck:
     cards = None
+    last_handle = None
 
     def __init__(self):
         self.cards = []
@@ -86,32 +87,6 @@ class Deck:
         return len(self.cards)
 
 
-class Pile:
-    cards = None
-
-    def __init__(self):
-        self.cards = []
-
-    def add(self, card):
-        self.cards.append(card)
-
-    def peek(self):
-        if len(self.cards) > 0:
-            return self.cards[-1]
-        else:
-            return None
-
-    def popAll(self):
-        return self.cards
-
-    def clear(self):
-        self.cards = []
-
-    def isSnap(self):
-        if len(self.cards) > 1:
-            return self.cards[-1].value == self.cards[-2].value
-        return False
-
 
 CARD_LENGTH = 100
 
@@ -127,16 +102,6 @@ class BelotePlayer:
         self.position = position
         self.name = name
 
-    def sort_hand(self):
-        # sort list by `name` in reverse order
-        self.hand.sort(
-            key=lambda card: (
-                str(card.suit),
-                card.value,
-            ),
-            reverse=False,
-        )
-
     def draw(self, deck):
         self.hand.append(deck.deal())
 
@@ -146,6 +111,9 @@ class BelotePlayer:
         if 1 <= figure <= len(self.hand):
             deck.cards.append(self.hand.pop(figure - 1))
             self.dispose_cards()
+            return True
+        return False
+    
 
     def dispose_cards(self):
         for index, card in enumerate(self.hand):
