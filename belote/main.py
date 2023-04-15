@@ -64,6 +64,13 @@ if __name__ == "__main__":
         text = font_20.render(f"Trump {gameEngine.trump}", True, (0, 255, 0))
         window.blit(text, (1200, 250))
 
+        text = font_20.render(f"Current Suit {gameEngine.currentsuit}", True, (0, 255, 0))
+        window.blit(text, (1200, 300))
+
+        text = font_20.render(f"Error {gameEngine.error_msg}", True, (0, 255, 0))
+        window.blit(text, (1200, 350))
+
+
         text = font_20.render(
             f"Active Team {gameEngine.active_team}", True, (0, 255, 0)
         )

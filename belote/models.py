@@ -92,6 +92,8 @@ CARD_LENGTH = 100
 
 
 class BelotePlayer:
+    non_trump_values = {1: 11, 7: 0, 8: 0, 9: 0, 10: 10, 11: 2, 12: 3, 13: 4}
+    trump_values = {1: 11, 7: 0, 8: 0, 9: 14, 10: 10, 11: 20, 12: 3, 13: 4}
     hand = None
     position = None
     name = None
@@ -105,15 +107,17 @@ class BelotePlayer:
     def draw(self, deck):
         self.hand.append(deck.deal())
 
-    def throw(self, key, deck):
-        figure = key - 48
-        print(f"figure {figure}")
-        if 1 <= figure <= len(self.hand):
-            deck.cards.append(self.hand.pop(figure - 1))
-            self.dispose_cards()
-            return True
-        return False
-    
+    def throw(self, figure, deck,):
+        deck.cards.append(self.hand.pop(figure - 1))
+        self.dispose_cards()
+
+    def count_suit(self, suit):
+        result = 0
+        for card in self.hand:
+            if card.suit == suit:
+                result += 1
+        return result
+
 
     def dispose_cards(self):
         for index, card in enumerate(self.hand):
