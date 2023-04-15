@@ -19,10 +19,20 @@ class Position:
 
 
 class Suits(Enum):
-    CLUB = 0
-    SPADE = 1
-    HEART = 2
-    DIAMOND = 3
+    CLUB = 0  # C KEY 99
+    SPADE = 1  # S KEY 115
+    HEART = 2  # H KEY 104
+    DIAMOND = 3  # D KEY 100
+
+    def suit(key):
+        if key == 99:
+            return Suits.CLUB
+        elif key == 115:
+            return Suits.SPADE
+        elif key == 104:
+            return Suits.HEART
+        elif key == 100:
+            return Suits.DIAMOND
 
 
 # Alright, the boilerplate is out of the way. Now, lets define the Card class.
@@ -44,6 +54,17 @@ class Card:
         return (
             "{" + str(self.suit) + ", " + str(self.value) + ", " + str(self.pos) + "}"
         )
+
+
+class Team:
+    players = None
+
+    def __init__(self, players):
+        self.players = players
+        self.index = len(players)
+
+    def __str__(self):
+        return str([player.name for player in self.players])
 
 
 class Deck:
@@ -108,14 +129,23 @@ class BelotePlayer:
 
     def sort_hand(self):
         # sort list by `name` in reverse order
-        self.hand.sort(key=lambda card: (str(card.suit), card.value,), reverse=False)
+        self.hand.sort(
+            key=lambda card: (
+                str(card.suit),
+                card.value,
+            ),
+            reverse=False,
+        )
 
     def draw(self, deck):
         self.hand.append(deck.deal())
 
-    def throw(self, index, deck):
-        deck.cards.append(self.hand.pop(index-1))
-        self.dispose_cards()
+    def throw(self, key, deck):
+        figure = key - 48
+        print(f"figure {figure}")
+        if 1 <= figure <= len(self.hand):
+            deck.cards.append(self.hand.pop(figure - 1))
+            self.dispose_cards()
 
     def dispose_cards(self):
         for index, card in enumerate(self.hand):
@@ -125,3 +155,6 @@ class BelotePlayer:
 
     def play(self):
         return self.hand.pop(0)
+
+    def __str__(self):
+        return self.name

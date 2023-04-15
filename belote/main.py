@@ -12,7 +12,7 @@ cardBack = pygame.transform.scale(cardBack, (int(238 * 0.8), int(332 * 0.8)))
 
 if __name__ == "__main__":
     pygame.init()
-    bounds = (2044, 1536)
+    bounds = (2048, 768)
     window = pygame.display.set_mode(bounds)
     pygame.display.set_caption("SnaPy")
     """    
@@ -32,18 +32,12 @@ if __name__ == "__main__":
         window.fill((15, 0, 169))
         font = pygame.font.SysFont("comicsans", 60, True)
 
-        """
-        window.blit(cardBack, (50, 250))
-        window.blit(cardBack, (700, 250))
-        window.blit(cardBack, (350, 50))
-        window.blit(cardBack, (350, 450))
-        """
         black = (255, 255, 255)
         selected_color = (255, 0, 0)
 
         for player in gameEngine.players:
             color = black
-            if gameEngine.currentPlayer == player:
+            if gameEngine.players[gameEngine.currentPlayer] == player:
                 color = selected_color
             text = font.render(player.name, True, color)
             window.blit(text, (player.position.x, player.position.y))
@@ -54,6 +48,13 @@ if __name__ == "__main__":
 
         for index, card in enumerate(gameEngine.deck.cards):
             window.blit(card.image, (index * card.image.get_size()[0] * 1.1 + 300, 800))
+
+        font = pygame.font.SysFont("comicsans", 20, True)
+        text = font.render(f"Trump {gameEngine.trump}", True, (0, 255, 0))
+        window.blit(text, (1200, 250))
+
+        text = font.render(f"Active Team {gameEngine.active_team}", True, (0, 255, 0))
+        window.blit(text, (1200, 450))
 
         """
         text = font.render(
@@ -117,20 +118,18 @@ if __name__ == "__main__":
                 run = False
             if event.type == pygame.KEYDOWN:
                 key = event.key
-                figure = key - 48
-                if figure >= 1 and figure <= len(gameEngine.currentPlayer.hand):
-                    print(f"key {key}, figure {figure}")
-                    print(f"gameEngine.state {gameEngine.state}")
-                    if gameEngine.state == GameState.PLAYING:
-                        gameEngine.currentPlayer.throw(figure, gameEngine.deck)
+                print(f"key {key}")
+                if gameEngine.state == GameState.PLAYING:
+                    gameEngine.players[gameEngine.currentPlayer].throw(
+                        key, gameEngine.deck
+                    )
+                    gameEngine.switchPlayer()
+                if gameEngine.state == GameState.BETTING:
+                    gameEngine.set_trump(key)
+                    gameEngine.switchPlayer()
 
-        gameEngine.play(key)
         renderGame(window)
         pygame.display.update()
 
-
-
-
-            #pygame.time.delay(3000)
-            #gameEngine.state = GameState.PLAYING
-
+        # pygame.time.delay(3000)
+        # gameEngine.state = GameState.PLAYING

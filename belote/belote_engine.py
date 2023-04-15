@@ -1,5 +1,5 @@
 from engine import Deck, GameState, Pile
-from models import BelotePlayer
+from models import BelotePlayer, Team, Suits
 from models import Position
 
 
@@ -27,12 +27,18 @@ class BeleteEngine:
             self.player3,
             self.player4,
         ]
+        self.teams = [
+            Team([self.player1, self.player3]),
+            Team([self.player2, self.player4]),
+        ]
         self.pile = Pile()
         self.deal()
         self.sort()
         self.dispose_cards()
-        self.currentPlayer = self.player1
-        self.state = GameState.PLAYING
+        self.currentPlayer = 0
+        self.trump = None
+        self.active_team = None
+        self.state = GameState.BETTING
 
     def deal(self):
         half = self.deck.length() // 4
@@ -50,10 +56,17 @@ class BeleteEngine:
             player.dispose_cards()
 
     def switchPlayer(self):
-        if self.currentPlayer == self.player1:
-            self.currentPlayer = self.player2
-        else:
-            self.currentPlayer = self.player1
+        self.currentPlayer += 1
+        if self.currentPlayer >= 4:
+            self.currentPlayer = 0
+
+    def set_trump(self, key):
+        if key in [99, 115, 104, 100]:
+            self.trump = Suits.suit(key)
+            if self.players[self.currentPlayer] in self.teams[0].players:
+                self.active_team = self.teams[0]
+            else:
+                self.active_team = self.teams[1]
 
     """
     Here we check which player is the current player and switch currentPlayer to the other player.
@@ -79,56 +92,3 @@ class BeleteEngine:
 
         if self.state == GameState.ENDED:
             return
-
-        """
-        if key == self.currentPlayer.flipKey:
-            self.pile.add(self.currentPlayer.play())
-            self.switchPlayer()
-
-            snapCaller = None
-            nonSnapCaller = None
-            isSnap = self.pile.isSnap()
-
-            if key == self.player1.snapKey:
-                snapCaller = self.player1
-                nonSnapCaller = self.player2
-            elif key == self.player2.snapKey:
-                snapCaller = self.player2
-                nonSnapCaller = self.player1
-
-            if isSnap and snapCaller:
-                self.winRound(snapCaller)
-                self.result = {
-                    "winner": snapCaller,
-                    "isSnap": True,
-                    "snapCaller": snapCaller,
-                }
-                self.winRound(snapCaller)
-            elif not isSnap and snapCaller:
-                self.result = {
-                    "winner": nonSnapCaller,
-                    "isSnap": False,
-                    "snapCaller": snapCaller,
-                }
-                self.winRound(nonSnapCaller)
-        """
-
-        """
-        We have two cases: one for a valid snap, and one for an invalid snap.
-        If the pile is a valid snap, we call the winRound method on the player who called "Snap!". Then we set the result property to a dictionary with the winner, whether it was a valid snap, and the player who called "Snap!". This will be used for information when we make the game user interface (UI).
-        Likewise, for an invalid snap, we call the winRound method on the player who didn't call "Snap!". Then we set the result property to a dictionary with the winner as the nonSnapCaller.
-        In both cases, we call the winRound method with whichever player won the cards. Recall in the winRound method we assign the pile to the player's hand. Then we clear the pile, and set the gameState to SNAPPING.
-        We've got just one last thing to check: if any player has run out of cards. If they have, then it means the other player wins. Add this logic to the play method:
-        """
-        """
-        if len(self.player1.hand) == 0:
-            self.result = {
-                "winner": self.player2,
-            }
-            self.state = GameState.ENDED
-        elif len(self.player2.hand) == 0:
-            self.result = {
-                "winner": self.player1,
-            }
-            self.state = GameState.ENDED
-        """
