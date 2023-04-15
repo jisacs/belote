@@ -56,6 +56,13 @@ if __name__ == "__main__":
         text = font.render(f"Active Team {gameEngine.active_team}", True, (0, 255, 0))
         window.blit(text, (1200, 450))
 
+        text = font.render("CLUB SPADE HEART DIAMOND", True, (0, 255, 0))
+        window.blit(text, (1200, 0))
+        CLUB = 0  # C KEY 99
+        SPADE = 1  # S KEY 115
+        HEART = 2  # H KEY 104
+        DIAMOND = 3  # D KEY 100
+
         """
         text = font.render(
             gameEngine.player1.name,  True, (255, 255, 255)
@@ -118,16 +125,8 @@ if __name__ == "__main__":
                 run = False
             if event.type == pygame.KEYDOWN:
                 key = event.key
-                print(f"key {key}")
-                if gameEngine.state == GameState.PLAYING:
-                    gameEngine.players[gameEngine.currentPlayer].throw(
-                        key, gameEngine.deck
-                    )
-                    gameEngine.switchPlayer()
-                if gameEngine.state == GameState.BETTING:
-                    gameEngine.set_trump(key)
-                    gameEngine.switchPlayer()
 
+                gameEngine.play(key)
         renderGame(window)
         pygame.display.update()
 

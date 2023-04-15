@@ -92,3 +92,14 @@ class BeleteEngine:
 
         if self.state == GameState.ENDED:
             return
+
+        print(f"key {key}")
+        if self.state == GameState.PLAYING:
+            self.players[self.currentPlayer].throw(
+                key, self.deck
+            )
+            self.switchPlayer()
+        if self.state == GameState.BETTING:
+            self.set_trump(key)
+            self.switchPlayer()
+
