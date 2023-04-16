@@ -1,12 +1,11 @@
 from engine import Deck, GameState
 from models import BelotePlayer, Team, Suits, Card
 from models import Position
+import utils
 from time import sleep
 
 
 class BeleteEngine:
-    non_trump_values = {1: 11, 7: 0, 8: 0, 9: 0, 10: 10, 11: 2, 12: 3, 13: 4}
-    trump_values = {1: 11, 7: 0, 8: 0, 9: 14, 10: 10, 11: 20, 12: 3, 13: 4}
     deck = None
     player1 = None
     player2 = None
@@ -18,6 +17,7 @@ class BeleteEngine:
     currentPlayer = None
     result = None
     currentsuit = None
+
 
     def __init__(self):
         self.deck = Deck()
@@ -53,11 +53,11 @@ class BeleteEngine:
 
     def sort_all(self):
         for player in self.players:
-            self.sort(player.hand)
+            utils.sort(player.hand, self.trump)
 
     def dispose_cards(self):
         for player in self.players:
-            self.sort(player.hand)
+            utils.sort(player.hand, self.trump)
             player.dispose_cards()
 
     def switchPlayer(self):
@@ -80,32 +80,8 @@ class BeleteEngine:
         else:
             return False
 
-    def sort(self, cards):
-        def get_value(card, trump):
-            if card.suit == trump:
-                return self.trump_values[card.value]
-            else:
-                return self.non_trump_values[card.value]
-
-        cards.sort(
-            key=lambda card: (
-                card.suit == self.trump,
-                str(card.suit),
-                get_value(card, self.trump),
-            ),
-            reverse=True,
-        )
-
     def current_player(self):
         return self.players[self.currentPlayer]
-
-    def best_trump_card(self, player):
-        best = Card(self.trump, 7)
-        for card in player.hand:
-            if card.suit == self.trump:
-                if self.trump_values[card.value] > best.value:
-                    best = card
-        return best
 
     def main_game(self, key):
 
@@ -136,14 +112,15 @@ class BeleteEngine:
         if selected_card.suit == self.trump:
             # A l atout on doit monter
             if len(self.deck.cards) > 0:
-                self.sort(self.deck.cards)
-                best_card = self.deck.cards[0]
-                print(f'best_card {best_card}, selected_card {selected_card} ')
-                if self.trump_values[selected_card.value] < self.trump_values[best_card.value]:
+                best_deck_card = utils.best_card(self.deck.cards, self.trump)
+                print(f'best_deck_card {best_deck_card}, selected_card {selected_card} ')
+                if utils.card_value(selected_card, self.trump) < utils.card_value(best_deck_card, self.trump):
                     # Sauf si on ne peut pas
-                    print(f' self.best_trump_card(self.current_player()) { self.best_trump_card(self.current_player())} ')
-                    if self.trump_values[self.best_trump_card(self.current_player()).value] > self.trump_values[best_card.value]:
-                        self.error_msg = f"Tu dois monter a l atout {self.currentsuit}"
+                    print(f'utils.card_value(selected_card, self.trump) { utils.card_value(selected_card, self.trump)} ')
+                    if utils.card_value(utils.best_card(self.current_player().hand, self.trump), self.trump) >\
+                            utils.card_value(best_deck_card, self.trump):
+                        self.error_msg = f"{self.current_player().name} Tu dois monter a l atout {self.currentsuit} avec " \
+                                         f"{utils.card_value(utils.best_card(self.current_player().hand, self.trump), self.trump)}"
                         return False
 
         self.error_msg = f"N/A"
@@ -151,13 +128,14 @@ class BeleteEngine:
         self.dispose_cards()
         self.switchPlayer()
 
-
         # If fin de manche, on designe le vainceur,vide le vide et reset le current suit
         if len(self.deck.cards) >= 4:
             # sort list by `name` in reverse order
-            self.sort(self.deck.cards)
+            utils.sort(self.deck.cards, self.trump)
             higher_card = self.deck.cards[0]
             print(f'higher_card {higher_card}')
+
+            # L equipe qui remporte cette maine prend les cartes
             self.deck.last_handle = self.deck.cards.copy()
             self.deck.cards = []
             self.currentsuit = None

@@ -38,38 +38,39 @@ class Suits(Enum):
 # Alright, the boilerplate is out of the way. Now, lets define the Card class.
 class Card:
     suit = None
-    value = None
+    figure = None
     image = None
     pos = Position(0, 0)
 
     def __init__(self, suit, value, position=None):
         self.suit = suit
-        self.value = value
+        self.figure = value
         self.image = pygame.image.load(
-            "images/" + self.suit.name + "-" + str(self.value) + ".svg"
+            "images/" + self.suit.name + "-" + str(self.figure) + ".svg"
         )
         self.pos = position
 
     def __repr__(self):
         return (
-            "{" + str(self.suit) + ", " + str(self.value) + ", " + str(self.pos) + "}"
+            "{" + str(self.suit) + ", " + str(self.figure) + ", " + str(self.pos) + "}"
         )
 
 
 class Team:
     players = None
+    won_cards = None
 
     def __init__(self, players):
         self.players = players
-        self.index = len(players)
 
     def __str__(self):
-        return str([player.name for player in self.players])
+        return str([player.name for player in self.players]) + str(self.won_cards)
 
 
 class Deck:
     cards = None
     last_handle = None
+    current_best_card = None
 
     def __init__(self):
         self.cards = []
@@ -77,6 +78,8 @@ class Deck:
             for value in [1, 7, 8, 9, 10, 11, 12, 13]:
                 self.cards.append(Card(suit, value))
 
+    def best_card(self):
+        pass
     def shuffle(self):
         random.shuffle(self.cards)
 
