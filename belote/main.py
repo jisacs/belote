@@ -43,6 +43,13 @@ if __name__ == "__main__":
             text = font.render(player.name, True, color)
             window.blit(text, (player.position.x, player.position.y))
 
+        x = 1200
+        y = 600
+        for team in gameEngine.teams:
+            text = font.render(f"{team.name}  : {team.score}", True, color)
+            window.blit(text, (x, y))
+            y += 150
+
             if gameEngine.first_player_id == index:
                 text = font_20.render("First", True, color)
                 window.blit(text, (player.position.x + 10, player.position.y - 10))
@@ -53,7 +60,7 @@ if __name__ == "__main__":
 
         if gameEngine.deck.last_handle:
             x = 1200
-            y = 600
+            y = 150
             for card in gameEngine.deck.last_handle:
                 window.blit(card.image, (x, y))
                 x += card.image.get_size()[0]/2
@@ -70,11 +77,6 @@ if __name__ == "__main__":
         text = font_20.render(f"Error {gameEngine.error_msg}", True, (0, 255, 0))
         window.blit(text, (1200, 350))
 
-
-        text = font_20.render(
-            f"Active Team {gameEngine.active_team}", True, (0, 255, 0)
-        )
-        window.blit(text, (1200, 450))
 
         text = font_20.render("CLUB SPADE HEART DIAMOND", True, (0, 255, 0))
         window.blit(text, (1200, 0))

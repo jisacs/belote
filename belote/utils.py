@@ -24,9 +24,17 @@ def sort(cards, trump):
     )
 
 
-def best_card(cards, trump):
-    best = cards[0]
-    for card in cards[1:]:
+def best_card(cards, trump, filter=None):
+    tmp_cards = cards
+    if filter:
+        tmp_cards = [card for card in cards if card.suit==filter]
+
+    best = tmp_cards[0]
+    for card in tmp_cards[1:]:
         if card_value(card, trump) > card_value(best, trump):
             best = card
     return best
+
+
+def get_points(cards, trump):
+    return sum([card_value(card, trump) for card in cards])

@@ -58,19 +58,21 @@ class Card:
 
 class Team:
     players = None
-    won_cards = None
+    score = 0
+    name =  "No name"
 
-    def __init__(self, players):
+    def __init__(self, name, players):
         self.players = players
+        self.name = name
 
     def __str__(self):
-        return str([player.name for player in self.players]) + str(self.won_cards)
+        return self.name + str([player.name for player in self.players]) + ", score " + str(self.score)
 
 
 class Deck:
     cards = None
     last_handle = None
-    current_best_card = None
+    current_best_player = None
 
     def __init__(self):
         self.cards = []
@@ -78,8 +80,6 @@ class Deck:
             for value in [1, 7, 8, 9, 10, 11, 12, 13]:
                 self.cards.append(Card(suit, value))
 
-    def best_card(self):
-        pass
     def shuffle(self):
         random.shuffle(self.cards)
 
